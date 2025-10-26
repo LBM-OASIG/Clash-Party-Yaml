@@ -1,0 +1,567 @@
+port: 7890
+socks-port: 7891
+allow-lan: false
+mode: Rule
+log-level: warning
+external-controller: 127.0.0.1:9090
+unified-delay: true
+
+hosts:
+  time.facebook.com: 17.253.84.125
+  time.android.com: 17.253.84.125
+  baidu.com: google.com
+dns:
+  enable: true
+  ipv6: false
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  prefer-h3: true
+  respect-rules: true
+
+  # 👇 默认 DNS：国内优先
+  nameserver:
+    - system
+    - https://223.5.5.5/dns-query
+    - https://doh.pub/dns-query
+
+  # 👇 代理节点域名专用 DNS：用国内加密 DNS，防止污染
+  proxy-server-nameserver:
+    - https://223.5.5.5/dns-query
+    - https://doh.pub/dns-query
+
+  # 👇 国外域名 fallback：用国外可信 DNS
+  fallback:
+    - https://dns.google/dns-query
+    - https://cloudflare-dns.com/dns-query
+  # 👇 fallback 过滤：只接受国外 IP，防止污染
+  fallback-filter:
+    geoip: true
+    geoip-code: CN
+    ipcidr:
+      - 240.0.0.0/4
+      - 0.0.0.0/32
+    domain:
+      - +.google.com
+      - +.facebook.com
+      - +.youtube.com
+  fake-ip-filter:
+    - "*"
+    - +.lan
+    - +.local
+    - time.*.com
+    - ntp.*.com
+    - +.market.xiaomi.com
+  use-hosts: true
+  use-system-hosts: true
+  default-nameserver:
+    - tls://223.5.5.5
+  direct-nameserver: []
+  # 在url处填写你的机场链接
+proxy-providers:
+  ikuuu:
+    type: http
+    url: 
+    interval: 3600
+    path: ./iKuuu_V2.yaml
+    health-check:
+      enable: true
+      interval: 100
+      url: https://www.apple.com/
+  ggjs:
+    type: http
+    url: 
+    interval: 3600
+    path: ./gougoujiasu.yaml
+    health-check:
+      enable: true
+      interval: 100
+      url: https://www.apple.com/
+  freecl:
+    type: http
+    url: 
+    interval: 3600
+    path: ./freecl.yaml
+    health-check:
+      enable: true
+      interval: 100
+      url: https://www.apple.com/
+  kokk:
+    type: http
+    url: 
+    interval: 3600
+    path: ./kokk.yaml
+    health-check:
+      enable: true
+      interval: 100
+      url: https://www.apple.com/
+proxy-groups:
+# 自动代理开关
+  - name: 仪表板
+    type: select
+    icon: https://www.clashverge.dev/assets/icons/speed.svg
+    proxies:
+      - "   "
+  - name: 自动代理
+    type: select
+    proxies:
+      - 开启
+      - 关闭
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Copilot.png
+# 全局下载开关
+  - name: 全局下载代理
+    type: select
+    proxies:
+      - 启用
+      - 不启用
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Download.png
+  - name: 启用
+    type: select
+    proxies:
+      - 下载专用节点
+    hidden: true
+    
+  - name: 下载专用节点
+    type: url-test
+    use:
+      - ikuuu
+      - ggjs
+      - kokk
+      - freecl
+    filter: "下载"
+    lazy: false
+    hidden: true
+
+  - name: 不启用
+    type: select
+    proxies: 
+      - 自动代理
+    hidden: true
+
+# 自动代理开关设置
+
+  - name: 开启
+    type: select
+    proxies:
+      - hid自动代理
+    hidden: true
+
+  - name: hid自动代理
+    type: url-test
+    proxies:
+      - 香港节点
+      - 美国节点
+      - 日本节点
+      - 新加坡节点
+      # - 台湾节点
+      - 英国节点
+      # - 阿根廷节点
+      # - 土耳其节点
+      # - 韩国节点
+      # - 印度节点
+      # - 德国节点
+      # - 加拿大节点
+      - 澳大利亚节点
+      # - 法国节点
+      # - 乌克兰节点
+      # - 迪拜节点
+      # - 智利节点
+      # - 墨西哥节点
+      # - 马来西亚节点
+      # - 菲律宾节点
+    lazy: false
+    icon: https://www.clashverge.dev/assets/icons/speed.svg
+    hidden: true
+
+  - name: 关闭
+    type: select
+    proxies:
+      - 手动代理
+    hidden: true
+
+  - name: 手动代理
+    type: select
+    proxies:
+      - 香港节点
+      - 美国节点
+      - 日本节点
+      - 新加坡节点
+      - 台湾节点
+      - 英国节点
+      - 阿根廷节点
+      - 俄罗斯节点
+      - 土耳其节点
+      - 韩国节点
+      - 印度节点
+      - 德国节点
+      - 加拿大节点
+      - 澳大利亚节点
+      - 法国节点
+      - 乌克兰节点
+      - 迪拜节点
+      - 智利节点
+      - 墨西哥节点
+      - 马来西亚节点
+      - 菲律宾节点
+    icon: https://www.clashverge.dev/assets/icons/adjust.svg
+  - name: 代理节点
+    type: select
+    proxies: 
+      - 全局下载代理
+    hidden: true
+  - name: 国内直连
+    type: select
+    proxies:
+      - DIRECT
+      - 代理节点
+    icon: https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/flags/cn.svg
+    
+  - name: 规则剩余
+    type: select
+    proxies:
+      - DIRECT
+      - 代理节点
+      - REJECT
+    icon: https://www.clashverge.dev/assets/icons/link.svg
+
+  - name: 搜狗屏蔽
+    type: select
+    proxies:
+      - REJECT
+      - 代理节点
+      - DIRECT
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Final_1.png
+
+  - name: 广告拦截
+    type: select
+    proxies:
+      - REJECT
+      - DIRECT
+    icon: https://www.clashverge.dev/assets/icons/block.svg
+# #######################################################
+# #######################################################
+
+  - name: "   "
+    type: select
+    proxies:
+      - "功能面板"
+  - name: 功能面板
+    type: select
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/WiFi.png
+    proxies:
+      - AI平台
+      - Steam国内加速
+      - Google加速
+      - GitHub加速
+      - 微软加速
+      - 广告拦截
+  - name: Steam国内加速
+    type: select
+    proxies:
+      - DIRECT
+      - 代理节点
+    icon: https://www.clashverge.dev/assets/icons/steam.svg
+    hidden: true
+
+  - name: Google加速
+    type: select
+    proxies:
+      - 代理节点
+      - DIRECT
+    hidden: true
+    icon: https://fastly.jsdelivr.net/gh/clash-verge-rev/clash-verge-rev.github.io@main/docs/assets/icons/google.svg
+  - name: GitHub加速
+    type: select
+    proxies:
+      - 代理节点
+      - DIRECT
+    hidden: true
+    icon: https://www.clashverge.dev/assets/icons/github.svg
+  - name: AI平台
+    type: select
+    proxies:
+      - 代理节点
+      - DIRECT
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Copilot.png
+    hidden: true
+  - name: 微软加速
+    type: select
+    proxies:
+      - 代理节点
+      - DIRECT
+    icon: https://fastly.jsdelivr.net/gh/shindgewongxj/WHATSINStash@master/icon/microsoft.png
+    hidden: true
+
+# 不同国家的节点
+  - name: 买节点
+    type: url-test
+    use:
+      - ikuuu
+      - ggjs
+      - kokk
+      - freecl
+    filter: "买"
+    hidden: true
+  - name: 香港节点
+    type: url-test
+    use:
+      - ikuuu
+      - ggjs
+      - kokk
+      - freecl
+    filter: "港|HK|hk|Hong Kong|HongKong|hongkong"
+    hidden: true
+  - name: 美国节点
+    type: url-test
+    use:
+      - ikuuu
+      - ggjs
+      - kokk
+      - freecl
+    hidden: true
+    filter: "美|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|US|United States"
+
+  - name: 日本节点
+    type: url-test
+    use:
+      - ikuuu
+      - ggjs
+      - kokk
+      - freecl
+    filter: "日本|川日|东京|大阪|泉日|埼玉|沪日|深日|JP|Japan"
+    hidden: true
+  - name: 新加坡节点
+    type: url-test
+    use:
+      - ikuuu
+      - ggjs
+      - kokk
+      - freecl
+    filter: "新加坡|坡|狮城|SG|Singapore"
+    hidden: true
+  - name: 台湾节点
+    type: url-test
+    use:
+      - ikuuu
+      - ggjs
+      - kokk
+      - freecl
+    filter: "台湾|台|新北|彰化|TW|Taiwan"
+    hidden: true
+  - name: 英国节点
+    type: url-test
+    use:
+      - ikuuu
+      - ggjs
+      - kokk
+      - freecl
+    filter: "英国|英|不列颠|UK|Great Britain|England|London|Scotland|Wales|伦敦|苏格兰|威尔士|曼彻斯特|伯明翰|利物浦"
+    hidden: true
+  - name: 阿根廷节点
+    type: url-test
+    use:
+      - ikuuu
+      - ggjs
+      - kokk
+      - freecl
+    filter: "阿根廷|阿|AR|Argentina|Buenos Aires|布宜诺斯艾利斯"
+    hidden: true
+  - name: 俄罗斯节点
+    type: url-test
+    use:
+      - ikuuu
+      - ggjs
+      - kokk
+      - freecl
+    filter: "俄罗斯|俄|沙俄|苏联|RU|Russia|Moscow|Saint Petersburg|莫斯科|圣彼得堡|西伯利亚|克里姆林"
+    hidden: true
+  - name: 土耳其节点
+    type: url-test
+    use:
+      - ikuuu
+      - ggjs
+      - kokk
+      - freecl
+    filter: "土耳其|土|TR|Turkey|Türkiye|Ankara|Istanbul|安卡拉|伊斯坦布尔|君士坦丁堡"
+    hidden: true
+  - name: 韩国节点
+    type: url-test
+    use:
+      - ikuuu
+      - ggjs
+      - kokk
+      - freecl
+    filter: "韩国|KR|Korea|KOR|首尔|韩|韓|南韩|高丽|South Korea|ROK|Seoul|Busan|首尔|釜山|仁川|济州岛"
+    hidden: true
+  - name: 印度节点
+    type: url-test
+    use:
+      - ikuuu
+      - ggjs
+      - kokk
+      - freecl
+    filter: "印度|印|IN|India|Bharat|New Delhi|Mumbai|Bangalore|新德里|孟买|班加罗尔|加尔各答|泰姬陵"
+    hidden: true
+  - name: 德国节点
+    type: url-test
+    use:
+      - ikuuu
+      - ggjs
+      - kokk
+      - freecl
+    filter: "德国|德|联邦德国|BRD|DE|Germany|Deutschland|Berlin|Munich|Frankfurt|柏林|慕尼黑|法兰克福|汉堡|科隆"
+    hidden: true
+  - name: 加拿大节点
+    type: url-test
+    use:
+      - ikuuu
+      - ggjs
+      - kokk
+      - freecl
+    filter: "加拿大|加|枫叶国|CA|Canada|Ottawa|Toronto|Vancouver|Montreal|渥太华|多伦多|温哥华|蒙特利尔|卡尔加里"
+    hidden: true
+  - name: 澳大利亚节点
+    type: url-test
+    use:
+      - ikuuu
+      - ggjs
+      - kokk
+      - freecl
+    filter: "澳大利亚|澳|澳洲|袋鼠国|AU|Australia|Sydney|Melbourne|Canberra|悉尼|墨尔本|堪培拉|布里斯班"
+    hidden: true
+  - name: 法国节点
+    type: url-test
+    use:
+      - ikuuu
+      - ggjs
+      - kokk
+      - freecl
+    filter: "法国|法|高卢|FR|France|Paris|Marseille|Lyon|巴黎|马赛|里昂|里尔"
+    hidden: true
+  - name: 乌克兰节点
+    type: url-test
+    use:
+      - ikuuu
+      - ggjs
+      - kokk
+      - freecl
+    filter: "乌克兰|乌|UA|Ukraine|Kyiv|Kiev|基辅|敖德萨|利沃夫|哈尔科夫|克里米亚|顿涅茨克|卢甘斯克"
+    hidden: true
+  - name: 迪拜节点
+    type: url-test
+    use:
+      - ikuuu
+      - ggjs
+      - kokk
+      - freecl
+    filter: "迪拜|杜拜|阿联酋|阿联|阿拉伯联合酋长国|UAE|United Arab Emirates|Dubai|Abra|Burj|阿布扎比|哈利法塔|帆船酒店"
+    hidden: true
+  - name: 智利节点
+    type: url-test
+    use:
+      - ikuuu
+      - ggjs
+      - kokk
+      - freecl
+    filter: "智利|智|CL|Chile|Santiago|Santigo|圣地亚哥|安第斯|瓦尔帕莱索|复活节岛"
+    hidden: true
+  - name: 墨西哥节点
+    type: url-test
+    use:
+      - ikuuu
+      - ggjs
+      - kokk
+      - freecl
+    filter: "墨西哥|墨|MX|Mexico|Mexico City|Ciudad de México|Cancun|Guadalajara|墨城|坎昆|瓜达拉哈拉|玛雅"
+    hidden: true
+  - name: 马来西亚节点
+    type: url-test
+    use:
+      - ikuuu
+      - ggjs
+      - kokk
+      - freecl
+    filter: "马来西亚|马国|大马|MY|Malaysia|Kuala Lumpur|吉隆坡|KL|槟城|新山|马六甲|砂拉越|沙巴"
+    hidden: true
+  - name: 菲律宾节点
+    type: url-test
+    use:
+      - ikuuu
+      - ggjs
+      - kokk
+      - freecl
+    filter: "菲律宾|菲|PH|Philippines|Manila|马尼拉|宿务|Cebu|吕宋岛|棉兰老岛"
+    hidden: true
+
+
+rules:
+  - DOMAIN-SUFFIX,dns.google,自动代理
+  - DOMAIN-SUFFIX,cloudflare-dns.com,自动代理
+  - DOMAIN-SUFFIX,dns.quad9.net,自动代理
+  - PROCESS-NAME,Everywhere.Windows,DIRECT
+  # - DOMAIN-KEYWORD,metacube,DIRECT
+  - GEOIP,LAN,DIRECT,no-resolve
+  - GEOSITE,category-ads-all,广告拦截
+#   - OR,((RULE-SET,blockhttpdns_domain),(RULE-SET,blockhttpdns_ip,no-resolve)),广告拦截
+  - DOMAIN-KEYWORD,ads,REJECT
+  - DOMAIN-KEYWORD,tracker,REJECT
+  - PROCESS-PATH-REGEX,.*SogouInput.*,搜狗屏蔽
+  - RULE-SET,cnip,国内直连
+  - DOMAIN-KEYWORD,github,GitHub加速
+  - GEOSITE,github,GitHub加速
+  - GEOIP,google,Google加速
+  - GEOSITE,google,Google加速
+  - GEOSITE,microsoft,微软加速
+  - DOMAIN-KEYWORD,google,Google加速
+  - RULE-SET,ai,AI平台
+  - RULE-SET,steam,Steam国内加速
+  - RULE-SET,gfw,代理节点
+  - RULE-SET,gfw2,代理节点
+  - GEOIP,CN,国内直连
+  - MATCH,规则剩余
+rule-providers:
+  steam:
+    behavior: "classical" # domain, ipcidr or classical (仅限 Clash Premium 内核)
+    type: http
+    url: "https://raw.githubusercontent.com/Femoon/clash-rules/master/steam.yaml"
+    interval: 3600
+    path: ./steam.yaml
+  # banad:
+  #   behavior: "domain" 
+  #   type: http
+  #   url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/reject.txt"
+  #   interval: 3600
+  #   path: ./reject.yaml
+  # banad:
+  #   type: http
+  #   behavior: domain
+  #   url: "https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/reject.txt"
+  #   path: ./reject.yaml
+  #   interval: 86400
+  ai:
+    behavior: classical
+    type: http
+    format: text
+    url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/AI.list"
+    interval: 3600
+    path: ./ai.yaml
+  cnip:
+    behavior: classical
+    type: http
+    format: text
+    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ChinaIp.list
+    interval: 3600
+    path: ./cnip.yaml
+  gfw:
+    behavior: domain
+    type: http
+    format: yaml
+    url: "https://fastly.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/gfw.txt"
+    interval: 3600
+    path: ./gfw.yaml
+  gfw2:
+    behavior: classical
+    type: http
+    format: text
+    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ProxyGFWlist.list
+    interval: 3600
+    path: ./gwf2.yaml
