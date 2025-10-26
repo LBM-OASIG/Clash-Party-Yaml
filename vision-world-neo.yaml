@@ -56,7 +56,7 @@ dns:
   default-nameserver:
     - tls://223.5.5.5
   direct-nameserver: []
-  # 在url处填写你的机场链接
+  # 在url处填入机场链接:
 proxy-providers:
   ikuuu:
     type: http
@@ -222,6 +222,7 @@ proxy-groups:
       - 代理节点
       - REJECT
     icon: https://www.clashverge.dev/assets/icons/link.svg
+    hidden: true
 
   - name: 搜狗屏蔽
     type: select
@@ -254,6 +255,8 @@ proxy-groups:
       - GitHub加速
       - 微软加速
       - 广告拦截
+      - 海外支付保护
+      - 微软应用商店直通
   - name: Steam国内加速
     type: select
     proxies:
@@ -291,6 +294,20 @@ proxy-groups:
     icon: https://fastly.jsdelivr.net/gh/shindgewongxj/WHATSINStash@master/icon/microsoft.png
     hidden: true
 
+  - name: 海外支付保护
+    type: select
+    proxies:
+      - 代理节点
+      - DIRECT
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/PayPal.png
+    hidden: true
+    
+  - name: 微软应用商店直通
+    type: select
+    proxies:
+      - DIRECT
+    icon: https://fastly.jsdelivr.net/gh/shindgewongxj/WHATSINStash@master/icon/appleappstore.png
+    hidden: true
 # 不同国家的节点
   - name: 买节点
     type: url-test
@@ -500,6 +517,11 @@ rules:
   - PROCESS-NAME,Everywhere.Windows,DIRECT
   # - DOMAIN-KEYWORD,metacube,DIRECT
   - GEOIP,LAN,DIRECT,no-resolve
+  - DOMAIN-SUFFIX,storeedgefd.dsx.mp.microsoft.com,微软应用商店直通
+  - DOMAIN-SUFFIX,dl.delivery.mp.microsoft.com,微软应用商店直通
+  - DOMAIN-SUFFIX,windowsupdate.com,微软应用商店直通
+  - DOMAIN-SUFFIX,msftconnecttest.com,微软应用商店直通
+  - PROCESS-NAME,WinStore.App.exe,微软应用商店直通
   - GEOSITE,category-ads-all,广告拦截
 #   - OR,((RULE-SET,blockhttpdns_domain),(RULE-SET,blockhttpdns_ip,no-resolve)),广告拦截
   - DOMAIN-KEYWORD,ads,REJECT
@@ -517,6 +539,11 @@ rules:
   - RULE-SET,gfw,代理节点
   - RULE-SET,gfw2,代理节点
   - GEOIP,CN,国内直连
+  - DOMAIN-KEYWORD,bitkeep,海外支付保护
+  - DOMAIN-KEYWORD,bitapi,海外支付保护
+  - DOMAIN-KEYWORD,chainnear,海外支付保护
+  - GEOIP,US,代理节点
+  - NOT,((GEOIP,CN)),代理节点
   - MATCH,规则剩余
 rule-providers:
   steam:
@@ -526,7 +553,7 @@ rule-providers:
     interval: 3600
     path: ./steam.yaml
   # banad:
-  #   behavior: "domain" 
+  #   behavior: "domain" # domain, ipcidr or classical (仅限 Clash Premium 内核)
   #   type: http
   #   url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/reject.txt"
   #   interval: 3600
