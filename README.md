@@ -31,4 +31,4 @@
 
 ### 友情链接
 
-* [策略组可用的图标集](https://https://www.clashverge.dev/guide/group_icon/group_icon.html#_5)
+* [策略组可用的图标集](https://www.clashverge.dev/guide/group_icon/group_icon.html#_5)
